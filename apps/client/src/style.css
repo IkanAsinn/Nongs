@@ -1,0 +1,1402 @@
+:root {
+  --ink: #3b2f2a;
+  --paper: #fff8ee;
+  --accent: #e8836b;
+  font-family: ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  color: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #cfe6f5;
+}
+
+#game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+#hud-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: auto;
+}
+
+.chip[hidden] {
+  display: none;
+}
+
+.chip.chip-alert {
+  background: var(--accent);
+  color: #fff;
+}
+
+#stats {
+  margin-left: auto;
+  background: var(--paper);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: grid;
+  gap: 6px;
+  box-shadow: 0 2px 0 rgb(59 47 42 / 0.15);
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 52px 150px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgb(59 47 42 / 0.12);
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #7fb069;
+}
+
+#food {
+  background: #e8a94b;
+}
+
+.bar i.low {
+  background: var(--accent);
+}
+
+#carried {
+  align-self: center;
+}
+
+/* The room goes dim while the player sleeps. */
+#shade {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: #1c2340;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+
+#shade.asleep {
+  opacity: 0.45;
+}
+
+/* The view turns blue when the camera dips under the pool's surface. */
+#underwater {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: rgb(46 150 196 / 0.4);
+}
+
+#underwater[hidden] {
+  display: none;
+}
+
+.chip {
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 2px 0 rgb(59 47 42 / 0.15);
+}
+
+.chip-quiet {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+#prompt {
+  align-self: center;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chip.chip-off {
+  background: var(--ink);
+  color: var(--paper);
+  opacity: 1;
+}
+
+/* The list of keys: hidden until F1 is pressed. */
+#help {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  pointer-events: none;
+  background: rgb(255 248 238 / 0.94);
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 13px;
+  box-shadow: 0 4px 0 rgb(59 47 42 / 0.18);
+}
+
+#help[hidden] {
+  display: none;
+}
+
+#help h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+#help dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 5px 14px;
+  align-items: center;
+}
+
+#help dt {
+  text-align: right;
+}
+
+#help dd {
+  margin: 0;
+}
+
+#help kbd {
+  margin: 0 1px;
+}
+
+/* A dot in the middle of the view, to aim furniture with. */
+#aim {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgb(59 47 42 / 0.6);
+  pointer-events: none;
+}
+
+#aim[hidden] {
+  display: none;
+}
+
+#start-card #start-hint {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+kbd {
+  display: inline-block;
+  font: inherit;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid rgb(59 47 42 / 0.25);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin: 0 2px 0 8px;
+}
+
+kbd + kbd {
+  margin-left: 0;
+}
+
+#wardrobe {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 340px;
+  overflow-y: auto;
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 20px 22px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#wardrobe[hidden] {
+  display: none;
+}
+
+#wardrobe h2 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+#wardrobe h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.wardrobe-hint {
+  margin: -8px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.wardrobe-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+:where(#wardrobe) button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 2px solid rgb(59 47 42 / 0.18);
+}
+
+:where(#wardrobe) button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wardrobe-style {
+  background: #fff;
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.wardrobe-style[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.wardrobe-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.wardrobe-swatch[aria-pressed='true'] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+}
+
+.wardrobe-done {
+  margin-top: auto;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#start {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(59 47 42 / 0.35);
+  cursor: pointer;
+}
+
+#start[hidden] {
+  display: none;
+}
+
+#start-card {
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 28px 40px;
+  text-align: center;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+}
+
+#start-card h1 {
+  margin: 0 0 6px;
+  font-family: 'Fredoka', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: var(--accent);
+}
+
+#start-card p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* ---- birthday ---- */
+.chip.chip-party {
+  background: #f3a6b8;
+  color: #fff;
+}
+
+/* ---- the fridge's recipe list ---- */
+#recipes {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 20px 22px 16px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+}
+
+#recipes[hidden] {
+  display: none;
+}
+
+#recipes h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  color: var(--accent);
+}
+
+#recipes ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+#recipes li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  background: #fff;
+  border-radius: 12px;
+  padding: 9px 12px;
+}
+
+#recipes li kbd {
+  margin: 2px 0 0;
+}
+
+#recipes li b {
+  font-size: 15px;
+}
+
+#recipes small {
+  display: block;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+#recipes small.facts {
+  opacity: 0.55;
+}
+
+#recipes .level {
+  margin-left: 6px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+
+#recipes .keys {
+  margin: 12px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+/* ---- cooking ---- */
+#cook {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+#cook[hidden],
+#cook [hidden] {
+  display: none;
+}
+
+#cook-card {
+  position: absolute;
+  top: 70px;
+  left: 16px;
+  width: 250px;
+  background: rgb(255 248 238 / 0.94);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 0 rgb(59 47 42 / 0.18);
+}
+
+#cook-card h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: var(--accent);
+}
+
+#cook-steps {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  display: grid;
+  gap: 3px;
+}
+
+#cook-steps li {
+  opacity: 0.55;
+}
+
+#cook-steps li.now {
+  opacity: 1;
+  font-weight: 700;
+}
+
+#cook-steps li.done {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+#cook-path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#cook-path path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 2 12;
+  animation: cook-march 0.6s linear infinite;
+  filter: drop-shadow(0 1px 1px rgb(59 47 42 / 0.5));
+}
+
+@keyframes cook-march {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+#cook-hint {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  translate: -50% -100%;
+  background: rgb(59 47 42 / 0.86);
+  color: var(--paper);
+  border-radius: 14px;
+  padding: 8px 14px 8px 10px;
+  max-width: 340px;
+  transition: transform 0.12s linear;
+}
+
+#cook-hint p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+#cook-hint p b {
+  color: #f9d26b;
+  margin-left: 4px;
+}
+
+#cook-hint p small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+#cook-hint p em {
+  font-style: normal;
+  color: #f9d26b;
+}
+
+#cook-gesture {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.g-mouse {
+  width: 22px;
+  height: 31px;
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.g-mouse .g-button {
+  fill: #f9d26b;
+  stroke: none;
+  animation: cook-click 1.2s ease-in-out infinite;
+}
+
+@keyframes cook-click {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.g-motion {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: #f9d26b;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.g-chop {
+  animation: cook-chop 0.7s ease-in infinite;
+}
+
+@keyframes cook-chop {
+  0% {
+    translate: 0 -6px;
+    opacity: 0.3;
+  }
+  70% {
+    translate: 0 5px;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 5px;
+    opacity: 0;
+  }
+}
+
+.g-circle {
+  animation: cook-spin 1.1s linear infinite;
+}
+
+@keyframes cook-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.g-drag {
+  animation: cook-drag 1.2s ease-in-out infinite;
+}
+
+@keyframes cook-drag {
+  0% {
+    translate: -5px 5px;
+    opacity: 0.3;
+  }
+  60%,
+  100% {
+    translate: 5px -5px;
+    opacity: 1;
+  }
+}
+
+.g-shake {
+  animation: cook-shake 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes cook-shake {
+  from {
+    translate: -6px 0;
+  }
+  to {
+    translate: 6px 0;
+  }
+}
+
+.g-flip {
+  animation: cook-flick 0.9s cubic-bezier(0.2, 0.9, 0.3, 1) infinite;
+}
+
+@keyframes cook-flick {
+  0%,
+  30% {
+    translate: 0 8px;
+    opacity: 0.4;
+  }
+  55% {
+    translate: 0 -8px;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 -8px;
+    opacity: 0;
+  }
+}
+
+#cook-heat {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  translate: -50% 0;
+  width: min(420px, calc(100vw - 32px));
+  background: rgb(255 248 238 / 0.94);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 0 rgb(59 47 42 / 0.18);
+}
+
+#cook-heat .heat-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f6e3b0, #f2c46b 60%, #d9483b 85%, #2e2622);
+}
+
+#cook-heat-ready {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgb(127 176 105 / 0.85);
+}
+
+#cook-heat-fill {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  border-right: 4px solid var(--ink);
+  background: rgb(255 255 255 / 0.25);
+}
+
+#cook-heat[data-state='hurry'] {
+  color: var(--accent);
+  animation: cook-pulse 0.5s ease-in-out infinite alternate;
+}
+
+#cook-heat[data-state='early'] #cook-heat-text {
+  opacity: 0.6;
+}
+
+@keyframes cook-pulse {
+  to {
+    scale: 1.04;
+  }
+}
+
+#cook-banner {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  translate: -50% 0;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 16px 30px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+  animation: cook-pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+  max-width: calc(100vw - 32px);
+}
+
+#cook-banner b {
+  font-size: 28px;
+  color: #7fb069;
+}
+
+#cook-banner.burnt b {
+  color: var(--accent);
+}
+
+#cook-banner .stars {
+  font-size: 30px;
+  color: #f2b53b;
+  letter-spacing: 4px;
+}
+
+#cook-banner small {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+@keyframes cook-pop {
+  from {
+    scale: 0.6;
+    opacity: 0;
+  }
+}
+
+#cook-cursor {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: rgb(232 131 107 / 0.35);
+  box-shadow: 0 0 0 2px rgb(59 47 42 / 0.55);
+  transition: scale 0.08s;
+}
+
+#cook-cursor.pressing {
+  scale: 0.75;
+  background: rgb(232 131 107 / 0.8);
+}
+
+/* ---- loading screen ---- */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+  overflow: hidden;
+  background: linear-gradient(#9fd3f2 0%, #cfe9f7 55%, #fdf3e3 100%);
+  font-family: 'Fredoka', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+#loading.done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#loading.ready {
+  cursor: pointer;
+}
+
+#loading .hill {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -32vh;
+  height: 52vh;
+  border-radius: 50% 50% 0 0;
+  background: #9ccf7f;
+  box-shadow: 0 -14px 0 #b6dd98;
+}
+
+#loading .cloud {
+  position: absolute;
+  left: -200px;
+  width: 180px;
+  height: 56px;
+  border-radius: 40px;
+  background: #fff;
+  opacity: 0.85;
+  animation: drift 38s linear infinite;
+}
+
+#loading .cloud::before,
+#loading .cloud::after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+
+#loading .cloud::before {
+  width: 80px;
+  height: 80px;
+  left: 28px;
+  top: -40px;
+}
+
+#loading .cloud::after {
+  width: 60px;
+  height: 60px;
+  left: 92px;
+  top: -26px;
+}
+
+#loading .c1 {
+  top: 12vh;
+  animation-delay: -20s;
+}
+
+#loading .c2 {
+  top: 26vh;
+  scale: 0.7;
+  animation-duration: 52s;
+  animation-delay: -30s;
+}
+
+#loading .c3 {
+  top: 6vh;
+  scale: 0.55;
+  animation-duration: 64s;
+  animation-delay: -12s;
+}
+
+@keyframes drift {
+  to {
+    translate: calc(100vw + 400px) 0;
+  }
+}
+
+#loading-stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(4px, 1.5vw, 24px);
+}
+
+#logo {
+  position: relative;
+  display: flex;
+  padding: 0 clamp(8px, 2vw, 28px);
+  font-size: clamp(64px, 15vw, 190px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+#logo span {
+  position: relative;
+  display: inline-block;
+  color: var(--letter);
+  -webkit-text-stroke: 0.06em #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 0.06em 0 rgb(59 47 42 / 0.18);
+  animation: hop 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.12s);
+}
+
+#logo span:nth-of-type(1) {
+  --letter: #e8836b;
+}
+#logo span:nth-of-type(2) {
+  --letter: #f3b04a;
+}
+#logo span:nth-of-type(3) {
+  --letter: #7cc08a;
+}
+#logo span:nth-of-type(4) {
+  --letter: #4aa8e8;
+}
+#logo span:nth-of-type(5) {
+  --letter: #e88fb0;
+}
+
+@keyframes hop {
+  0%,
+  60%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  30% {
+    translate: 0 -0.12em;
+    rotate: -4deg;
+  }
+}
+
+/* A little roof sits over the "o", like a house. */
+#logo .roof {
+  position: absolute;
+  left: 50%;
+  top: 0.06em;
+  width: 0.7em;
+  translate: -50% 0;
+  -webkit-text-stroke: 0;
+  fill: none;
+  stroke: #c9584a;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+
+#logo .roof rect {
+  fill: #c9584a;
+  stroke: none;
+}
+
+.nong {
+  height: clamp(110px, 24vh, 250px);
+  filter: drop-shadow(0 10px 6px rgb(59 47 42 / 0.18));
+  animation: bounce 1.2s ease-in-out infinite;
+  user-select: none;
+  pointer-events: none;
+}
+
+.nong.n1 {
+  animation-delay: -0.3s;
+}
+.nong.n2,
+.nong.n4 {
+  height: clamp(95px, 20vh, 215px);
+  animation: jog 0.6s ease-in-out infinite;
+}
+.nong.n3 {
+  animation-delay: -0.8s;
+}
+.nong.n4 {
+  animation-delay: -0.3s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -18%;
+  }
+}
+
+@keyframes jog {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -2deg;
+  }
+  50% {
+    translate: 0 -5%;
+    rotate: 2deg;
+  }
+}
+
+#loading-progress {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+}
+
+#loading-bar {
+  width: 100%;
+  height: 18px;
+  padding: 3px;
+  border-radius: 999px;
+  background: #fff8ee;
+  box-shadow: 0 4px 0 rgb(59 47 42 / 0.15);
+}
+
+#loading-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: repeating-linear-gradient(-45deg, #e8836b 0 12px, #f09a82 12px 24px);
+  background-size: 34px 100%;
+  animation: stripes 0.8s linear infinite;
+  transition: width 0.4s ease;
+}
+
+@keyframes stripes {
+  to {
+    background-position: 34px 0;
+  }
+}
+
+#loading-text {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+#loading-text .dots b {
+  font-weight: 700;
+  animation: dot 1.2s infinite;
+}
+#loading-text .dots b:nth-child(2) {
+  animation-delay: 0.2s;
+}
+#loading-text .dots b:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.2;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+#loading-play {
+  font: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 40px;
+  box-shadow: 0 6px 0 #c9584a;
+  cursor: pointer;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+#loading-play[hidden],
+#loading.ready #loading-bar,
+#loading.ready #loading-text {
+  display: none;
+}
+
+@keyframes pulse {
+  50% {
+    scale: 1.06;
+  }
+}
+
+#loading-hint {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+#loading.failed #loading-fill {
+  background: #c9584a;
+  animation: none;
+}
+
+#loading.failed .dots {
+  display: none;
+}
+
+/* On a narrow screen the logo gets its own row and the Nongs line up under it. */
+@media (max-width: 760px) {
+  #loading-stage {
+    flex-wrap: wrap;
+    row-gap: 2vh;
+  }
+
+  #logo {
+    order: -1;
+    flex-basis: 100%;
+    justify-content: center;
+    font-size: min(22vw, 120px);
+  }
+
+  .nong,
+  .nong.n2,
+  .nong.n4 {
+    height: min(16vh, 30vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #loading *,
+  #loading *::before,
+  #loading *::after {
+    animation: none !important;
+  }
+}
+
+/* ---- log in and register, on the loading page ---- */
+#loading.loaded #loading-bar,
+#loading.loaded #loading-text {
+  display: none;
+}
+
+#auth[hidden],
+#loading-welcome:empty,
+.link-button[hidden] {
+  display: none;
+}
+
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(340px, calc(100vw - 32px));
+  padding: 20px 24px 16px;
+  background: var(--paper);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.18);
+  cursor: auto;
+}
+
+#auth-form h2 {
+  margin: 0 0 2px;
+  text-align: center;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+#auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#auth-form label[hidden] {
+  display: none;
+}
+
+#auth-form input {
+  font: inherit;
+  font-size: 17px;
+  padding: 8px 12px;
+  border: 2px solid rgb(59 47 42 / 0.18);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+
+#auth-form input:focus {
+  border-color: var(--accent);
+}
+
+#auth-error {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 14px;
+  color: #c9584a;
+}
+
+#auth-submit {
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 10px;
+  box-shadow: 0 5px 0 #c9584a;
+  cursor: pointer;
+}
+
+#auth-submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+#auth-submit:active {
+  translate: 0 3px;
+  box-shadow: 0 2px 0 #c9584a;
+}
+
+#auth-switch {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+#auth-switch button,
+.link-button {
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+#loading-welcome {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+}
+
+#loading-switch {
+  font-size: 14px;
+}
+
+#start-settings {
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+/* ---- settings ---- */
+#settings {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 20;
+  width: min(380px, calc(100vw - 32px));
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 20px 24px 16px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#settings[hidden] {
+  display: none;
+}
+
+#settings h2 {
+  margin: 0;
+  font-family: 'Fredoka', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+.settings-slider {
+  display: grid;
+  grid-template-columns: 1fr 3.2em;
+  align-items: center;
+  column-gap: 10px;
+  font-weight: 600;
+}
+
+.settings-slider input {
+  grid-column: 1;
+  accent-color: var(--accent);
+}
+
+.settings-slider output {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-who {
+  margin: 0;
+  font-size: 14px;
+}
+
+.settings-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.settings-buttons button {
+  flex: 1;
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 9px;
+  cursor: pointer;
+}
+
+.settings-close {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 4px 0 #c9584a;
+}
+
+.settings-logout {
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 4px 0 rgb(59 47 42 / 0.18);
+}
+
+.settings-hint {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* ---- reaction bar ---- */
+#reactions {
+  position: fixed;
+  left: 50%;
+  bottom: 70px;
+  translate: -50% 0;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: var(--paper);
+  border-radius: 20px;
+  box-shadow: 0 6px 0 rgb(59 47 42 / 0.2);
+  pointer-events: none;
+}
+
+#reactions[hidden] {
+  display: none;
+}
+
+.reaction {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 66px;
+  padding: 6px 2px 4px;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.reaction-icon {
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.reaction-name {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.reaction kbd {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  font-size: 11px;
+}

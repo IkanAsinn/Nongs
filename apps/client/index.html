@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nongs</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="shade"></div>
+    <div id="underwater" hidden></div>
+
+    <div id="hud">
+      <div id="hud-top">
+        <span id="zone" class="chip">…</span>
+        <span id="view" class="chip chip-quiet">Third person</span>
+        <span id="dirt" class="chip chip-quiet" hidden></span>
+        <span id="birthday" class="chip chip-party" hidden>Happy birthday! There is cake in the living room</span>
+        <span id="fps" class="chip chip-quiet">– fps</span>
+        <span id="mic" class="chip chip-quiet">Mic on</span>
+        <span id="sound" class="chip chip-quiet">Sound on</span>
+        <span id="decorating" class="chip chip-alert" hidden>Decorating · B to finish</span>
+        <div id="stats">
+          <div class="stat"><span>Energy</span><div class="bar"><i id="energy"></i></div></div>
+          <div class="stat"><span>Food</span><div class="bar"><i id="food"></i></div></div>
+        </div>
+      </div>
+      <div id="carried" class="chip" hidden></div>
+      <div id="prompt" hidden></div>
+    </div>
+
+    <div id="aim" hidden></div>
+
+    <div id="help" hidden>
+      <h2>Keys</h2>
+      <dl>
+        <dt><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></dt><dd>Move</dd>
+        <dt><kbd>Shift</kbd></dt><dd>Run, or swim faster</dd>
+        <dt><kbd>Space</kbd></dt><dd>Jump</dd>
+        <dt><kbd>Mouse</kbd></dt><dd>Look around</dd>
+        <dt><kbd>V</kbd></dt><dd>Switch between third and first person</dd>
+        <dt><kbd>E</kbd></dt><dd>Use what you are looking at</dd>
+        <dt><kbd>L</kbd></dt><dd>Lock or unlock the door of the bedroom or bathroom you are in</dd>
+        <dt><kbd>Mouse</kbd> button</dt><dd>Cooking: chop, stir, pour, season and flip with the gesture shown</dd>
+        <dt><kbd>Q</kbd></dt><dd>Eat, or put away what you hold</dd>
+        <dt><kbd>F</kbd></dt><dd>Sweep (hold, with the broom)</dd>
+        <dt><kbd>B</kbd></dt><dd>Decorate: move furniture, turn it with <kbd>R</kbd>, put it away with <kbd>X</kbd>, take things out of storage with <kbd>C</kbd></dd>
+        <dt><kbd>M</kbd></dt><dd>Microphone on or off</dd>
+        <dt><kbd>N</kbd></dt><dd>Sound on or off</dd>
+        <dt><kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd></dt><dd>React: wave, clap, cheer, shrug, laugh, dance, blow a kiss</dd>
+        <dt><kbd>O</kbd></dt><dd>Settings: music and sound volume, log out</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Free the mouse</dd>
+        <dt><kbd>F1</kbd></dt><dd>Show or hide this list</dd>
+      </dl>
+    </div>
+
+    <aside id="wardrobe" hidden></aside>
+    <aside id="recipes" hidden></aside>
+    <aside id="settings" hidden></aside>
+    <div id="reactions" hidden></div>
+
+    <div id="cook" hidden>
+      <div id="cook-card">
+        <h3 id="cook-name"></h3>
+        <ol id="cook-steps"></ol>
+      </div>
+      <svg id="cook-path"><path /></svg>
+      <div id="cook-hint">
+        <div id="cook-gesture"></div>
+        <p id="cook-hint-text"></p>
+      </div>
+      <div id="cook-heat" hidden>
+        <div class="heat-bar"><i id="cook-heat-ready"></i><i id="cook-heat-fill"></i></div>
+        <span id="cook-heat-text"></span>
+      </div>
+      <div id="cook-banner" hidden></div>
+      <div id="cook-cursor"></div>
+    </div>
+
+    <div id="start" hidden>
+      <div id="start-card">
+        <h1>Nongs</h1>
+        <p id="start-status">Click to continue</p>
+        <p id="start-hint"><kbd>F1</kbd> shows the keys</p>
+        <button id="start-settings" class="link-button" type="button">Settings</button>
+      </div>
+    </div>
+
+    <div id="loading">
+      <div class="cloud c1"></div>
+      <div class="cloud c2"></div>
+      <div class="cloud c3"></div>
+      <div class="hill"></div>
+      <div id="loading-stage">
+        <img class="nong n1" src="/loading/jump-girl.webp" alt="" />
+        <img class="nong n2" src="/loading/run-boy.webp" alt="" />
+        <div id="logo" role="img" aria-label="Nongs">
+          <span style="--i: 0">N</span><span style="--i: 1">o<svg class="roof" viewBox="0 0 120 50" aria-hidden="true"><path d="M8 44 60 8l52 36" /><rect x="84" y="10" width="12" height="20" rx="2" /></svg></span><span style="--i: 2">n</span><span style="--i: 3">g</span><span style="--i: 4">s</span>
+        </div>
+        <img class="nong n3" src="/loading/jump-boy.webp" alt="" />
+        <img class="nong n4" src="/loading/run-girl.webp" alt="" />
+      </div>
+      <div id="loading-progress">
+        <div id="loading-bar"><i id="loading-fill"></i></div>
+        <p id="loading-text"><span id="loading-step">Opening the front door</span><span class="dots"><b>.</b><b>.</b><b>.</b></span></p>
+        <div id="auth" hidden></div>
+        <p id="loading-welcome"></p>
+        <button id="loading-play" hidden>Click to play</button>
+        <button id="loading-switch" class="link-button" hidden>Not you? Log out</button>
+        <p id="loading-hint"><kbd>F1</kbd> shows the keys</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

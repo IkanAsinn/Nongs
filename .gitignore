@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+meshy_output/
+.playwright-mcp/
+
+# Downloaded converter binary (get it from github.com/facebookincubator/FBX2glTF releases, v0.9.7)
+tools/fbx2gltf/*.exe
+apps/server/data/
+
+# Blender backups and this machine's own MCP setup
+*.blend1
+.mcp.json

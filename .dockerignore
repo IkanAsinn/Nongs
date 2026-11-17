@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+.git
+.playwright-mcp
+apps/server/data
+meshy_output
+tools
+*.log
+.env
+.env.*
+# Only the game-ready models go into the image; the raw downloads and .blend files stay out.
+assets/*
+!assets/converted

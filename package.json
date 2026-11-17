@@ -1,0 +1,23 @@
+{
+  "name": "nongs",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node tools/dev.mjs",
+    "build": "npm run build -w @nongs/client",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev:client": "npm run dev -w @nongs/client",
+    "dev:server": "npm run dev -w @nongs/server"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.2.1",
+    "@gltf-transform/extensions": "^4.2.1",
+    "@gltf-transform/functions": "^4.2.1",
+    "sharp": "^0.34.5"
+  }
+}
