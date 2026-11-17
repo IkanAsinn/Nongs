@@ -1052,7 +1052,10 @@ export class Kitchen {
   private updateHud(camera: THREE.Camera, width: number, height: number): void {
     const hud = this.hud;
     const step = this.step;
-    hud.cursor.style.transform = `translate(${this.cursor.x}px, ${this.cursor.y}px)`;
+    // The `translate` property, not `transform`: the stylesheet shrinks the marker with `scale`
+    // while pressing, and `scale` applied to a translating `transform` would shrink its position
+    // too, throwing the marker up and to the left of where it really points.
+    hud.cursor.style.translate = `${this.cursor.x}px ${this.cursor.y}px`;
     hud.cursor.classList.toggle('pressing', this.carrying !== null || (step?.gesture === 'chop' && this.knifeLift < 1));
 
     if (this.ending) {
