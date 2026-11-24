@@ -1,19 +1,30 @@
-# Nongs on a VPS with Dokploy: create a "Compose" service from this repository
-# with this file, fill in the variables below in Dokploy's Environment tab, and
-# give two domains in Dokploy's Domains tab:
+# Nongs on a VPS with Dokploy, using only ports 80 and 443.
 #
-#   game.example.com   -> service "game",  port 5181  (the game, the API and the game server)
-#   voice.example.com  -> service "livekit", port 7880 (voice signalling only)
+# Create a "Compose" service from this repository with this file, fill in the
+# variables below in Dokploy's Environment tab, and add two domains in its
+# Domains tab (HTTPS on, Let's Encrypt):
 #
-# Dokploy's Traefik gives both HTTPS. The voice itself does not go through
-# Traefik: open these ports on the VPS firewall, straight to the livekit service:
-#   7881/tcp, 7882/udp (media), 3478/udp (TURN, for players behind strict firewalls)
+#   nongs.example.com  -> service "game",    port 5181  (the game, the API and the game server)
+#   voice.example.com  -> service "livekit", port 7880  (voice signalling, a WebSocket)
+#
+# The third domain, TURN_DOMAIN, is NOT added in the Domains tab: the labels on
+# the livekit service below route it. It carries the voice audio itself (TURN
+# over TLS) through Traefik on port 443, so no other port has to be open.
+# Players' browsers would normally send audio straight to LiveKit on
+# 7882/udp; with that port closed they fall back to this relay on their own.
+# If 7881/tcp and 7882/udp are ever opened, add them under livekit "ports"
+# for lower latency; nothing else changes.
+#
+# DNS: all three names point at the VPS. With Cloudflare, TURN_DOMAIN must be
+# "DNS only" (grey cloud): Cloudflare's proxy only carries web traffic. The
+# other two may be proxied (WebSockets on).
 #
 # Variables (Dokploy > Environment):
 #   POSTGRES_PASSWORD   a long random password
 #   LIVEKIT_API_KEY     any name, e.g. nongs
 #   LIVEKIT_API_SECRET  a long random string (at least 32 characters)
 #   VOICE_DOMAIN        voice.example.com
+#   TURN_DOMAIN         turn.example.com
 
 services:
   game:
@@ -22,10 +33,10 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://nongs:${POSTGRES_PASSWORD}@postgres:5432/nongs
-      LIVEKIT_URL: wss://${VOICE_DOMAIN}
-      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
-      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+      DATABASE_URL: postgres://nongs:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/nongs
+      LIVEKIT_URL: wss://${VOICE_DOMAIN:?set VOICE_DOMAIN}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:?set LIVEKIT_API_KEY}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:?set LIVEKIT_API_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,18 +61,49 @@ services:
   livekit:
     image: livekit/livekit-server:v1.13.11
     restart: unless-stopped
-    command: --config /etc/livekit.yaml
     environment:
       # LiveKit reads "key: secret" pairs from here.
       LIVEKIT_KEYS: '${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}'
-    volumes:
-      - ./livekit.yaml:/etc/livekit.yaml:ro
+      # The whole LiveKit configuration (one LiveKit room per zone of the house).
+      LIVEKIT_CONFIG: |
+        port: 7880
+        rtc:
+          # Direct media; only reachable if these ports are opened on the VPS.
+          tcp_port: 7881
+          udp_port: 7882
+          use_external_ip: true
+        turn:
+          # TURN over TLS: Traefik takes TLS off on 443 and hands plain TCP to
+          # tls_port; external_tls makes LiveKit tell browsers to use port 443.
+          enabled: true
+          domain: ${TURN_DOMAIN:?set TURN_DOMAIN}
+          tls_port: 5349
+          external_tls: true
+        room:
+          # Rooms are made when the first player joins a zone and closed soon after the last one leaves.
+          empty_timeout: 60
+          max_participants: 16
+        logging:
+          level: info
     expose:
       - '7880'
-    ports:
-      - '7881:7881/tcp'
-      - '7882:7882/udp'
-      - '3478:3478/udp'
+      - '5349'
+    networks:
+      - default
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      # Raw TLS on 443 for TURN_DOMAIN only; every other name on 443 still goes to the normal web routes.
+      - traefik.tcp.routers.nongs-turn.rule=HostSNI(`${TURN_DOMAIN}`)
+      - traefik.tcp.routers.nongs-turn.entrypoints=websecure
+      - traefik.tcp.routers.nongs-turn.tls.certresolver=letsencrypt
+      - traefik.tcp.routers.nongs-turn.service=nongs-turn
+      - traefik.tcp.services.nongs-turn.loadbalancer.server.port=5349
+
+networks:
+  dokploy-network:
+    external: true
 
 volumes:
   postgres:

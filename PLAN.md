@@ -33,7 +33,7 @@ packages/shared  types, constants, zones, recipes, catalogs
 assets/raw       Meshy downloads (untouched)
 assets/out       Optimized game-ready GLBs
 tools/pipeline   Asset processing scripts
-deploy/          Dockerfiles, livekit.yaml
+deploy/          docker-compose.yml (Dokploy)
 ```
 
 ## 2. Server-authoritative rules
@@ -134,7 +134,8 @@ Fallback: Blender is free and can run headless (`blender --background --python s
 
 ## 9. Deployment (Dokploy)
 - One `game` container serves the built client, the API and the game server's WebSocket on port 5181, behind Traefik (see `deploy/docker-compose.yml`).
-- `livekit` exposes **TCP 7881, UDP 7882** (single-port mode) and built-in TURN on **UDP 3478 / TLS 5349** directly, not through Traefik. Only signaling goes through Traefik.
+- The VPS only has ports **80 and 443** open, so everything goes through Dokploy's Traefik. LiveKit signaling is an ordinary HTTPS domain (`VOICE_DOMAIN`). The audio goes over LiveKit's built-in TURN over TLS on a third domain (`TURN_DOMAIN`): a Traefik TCP router picks that name out of port 443 by SNI and hands it to LiveKit's port 5349. Browsers try direct UDP first and fall back to this relay. With Cloudflare, `TURN_DOMAIN` must be DNS only. Opening 7881/tcp and 7882/udp later would give lower latency without other changes.
+- Dokploy panel: `dokploy.ikanasinn.com` (its GitHub connection can already pull this repository).
 - VPS: 4 vCPU and 4–8 GB RAM. Bandwidth is the main cost (about 8 Mbps per listener with 16 people talking in one zone).
 
 ## 10. Milestones
@@ -163,7 +164,7 @@ Everything that matters is now decided by the server (`apps/server/src/house.ts`
 | 6 Cooking, dirt, decorating | Done on the server: litter builds up there (also while the house is empty), sweeping is checked for reach and tool, doors and locks (knocking, opening from inside unlocks) are shared, furniture moves are checked with `checkPlacement` and saved in `furniture`. Pictures are stored on the server, re-encoded to 512 × 364 JPEG, and anyone can take a bad one down. Storage instead of a shop: in decorate mode X puts a piece away and C takes stored pieces out again. Cooking itself stays on the client; only the meal's effect on hunger goes through the server. |
 | 7 Birthday | Done: six candles on the cake, blown out by blowing into the microphone (a low, loud sound for 0.8 s) or by holding F; slices are refused until then. The cake resets each new day. |
 | 8 Art pass | Furniture is drawn in batches, one per material (`apps/client/src/world/batches.ts`); closed rooms are only drawn from inside or through an open door (`world/visibility.ts`); resolution drops to 0.75 when the frame rate falls. Draw calls: about 180 at the front door looking in (was 364), 80–110 inside rooms. Body textures are WebP (4.4 MB → 1.3 MB), one copy per body shared by every player. KTX2 was not done: the furniture textures are already 10–35 KB JPEGs, and the bodies are the only large ones. |
-| 9 Deployment | Ready to try: `Dockerfile` (one image: game, API and game server on port 5181), `deploy/docker-compose.yml` (game, PostgreSQL 16, LiveKit) and `deploy/livekit.yaml`. Not yet deployed. |
+| 9 Deployment | Ready to try: `Dockerfile` (one image: game, API and game server on port 5181), `deploy/docker-compose.yml` (game, PostgreSQL 16, LiveKit with its configuration inline, voice over port 443 only). Not yet deployed. |
 
 ### Action items, in order
 1. **Try voice for real.** Run LiveKit (`livekit-server --dev`, or the compose file) with `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` set, and check two players in one room, in the backyard at a distance, muting, deafening and a zone change.
@@ -173,4 +174,4 @@ Everything that matters is now decided by the server (`apps/server/src/house.ts`
 5. **Loose clothing** (skirts, hoodies) needs `fit-clothing` and the fitter (§4.2).
 6. **Shared cooking.** Pots, pans and the stove are still each player's own; the server only checks the meal's effect.
 
-Housekeeping: the folder is a git repository now, with nothing committed yet. Re-run `tools/blender/build_house.py` once in Blender to confirm it reads the shared furniture file.
+Housekeeping: re-run `tools/blender/build_house.py` once in Blender to confirm it reads the shared furniture file.

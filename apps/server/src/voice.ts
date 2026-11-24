@@ -6,7 +6,7 @@
  * does.
  *
  *   LIVEKIT_URL         the address browsers connect to, e.g. wss://voice.example.com
- *   LIVEKIT_API_KEY     the key and secret from livekit.yaml
+ *   LIVEKIT_API_KEY     the key and secret given to LiveKit (LIVEKIT_KEYS in deploy/docker-compose.yml)
  *   LIVEKIT_API_SECRET
  *
  * Without these, voice is simply off and the game says so.
